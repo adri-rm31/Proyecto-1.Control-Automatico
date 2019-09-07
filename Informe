@@ -1,0 +1,399 @@
+\documentclass[journal,trans]{IEEEtran}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage[spanish,activeacute]{babel}
+\ifCLASSINFOpdf
+\else
+\fi
+\hyphenation{op-tical net-works semi-conduc-tor}
+\begin{document}
+\newcommand{\titlepaper}{Proyecto Introductorio}
+\title{\titlepaper}
+\renewcommand\IEEEkeywordsname{Palabras clave}
+
+\author{\IEEEauthorblockN{German Monge-Cerdas, Devon Mora-Gal, Jorge Rodríguez-Esquivel, Adriana Rojas-Mesén}
+
+\IEEEauthorblockA{germanmonge96@gmail.com}
+\IEEEauthorblockA{moradevon@hotmail.com}
+\IEEEauthorblockA{jo.roes18@gmail.com}
+\IEEEauthorblockA{adrianarm31@gmail.com}
+\IEEEauthorblockA{\\EL-5408 Control Automático}
+\IEEEauthorblockA{\\Escuela de Ingeniería Electrónica}
+\IEEEauthorblockA{\\Instituto Tecnológico de Costa Rica}
+}
+
+\markboth{Monge, Mora, Rodríguez, Rojas, \titlepaper}%
+{Shell \MakeLowercase{\textit{et al.}}: Bare Demo of IEEEtran.cls for Journals}
+
+\IEEEtitleabstractindextext{%
+\begin{abstract}
+El presente informe exponen los procedimientos y resultados obtenidos del primer proyecto del curso de Control Automático, en dicho proyecyo se usó la herramientas de software especializado, llamado Maxima; dicho proyecto se basa en la solución de distintos requerimientos para un sistema de control de un torno paralelo convencional. Se estudió el comportamiento del sistema en lazo cerrado y lazo abierto, además de diseñar un compensador de atraso y adelanto para analizar su comportamiento de este en su estado estable. Al final se destacó que el mejor regulador fue el de atraso, además de adquirir un conocimiento básico en uso
+de herramietas de software especializado como lo es el programa Maxima.
+ 
+\end{abstract}
+\begin{IEEEkeywords}
+Compensador de Adelanto, Compensador de Atraso, Error en Estado Estable, Lazo Abierto, Lazo Cerrado, Maxima 
+\end{IEEEkeywords}}
+
+\maketitle
+
+\IEEEdisplaynontitleabstractindextext
+
+\IEEEpeerreviewmaketitle
+
+
+\section{INTRODUCCIÓN}
+La función de transferencia se utiliza para caracterizar la relación Entrada-Salida de sistemas lineales e invariantes en el tiempo mediante ecuaciones diferenciales. 
+
+	\begin{figure}[hbtp]
+	\centering
+	\includegraphics[width = \columnwidth]{diabloq.pdf}
+	\caption[Figura3]{Diagrama de bloques de un sistema en lazo cerrado. \cite{Ogata}}
+	\label{fig:diabloq} 
+\end{figure}
+
+Según (Ogata, 2010), refiriéndose a la figura~\ref{fig:diabloq}, el cociente de la señal de realimentación
+B(s) entre la señal de error E(s) se denomina función de transferencia en lazo abierto. Es decir:
+
+
+\begin{equation}\label{eq:Og_FT_ol}
+	\centering	\frac{B(s)}{E(s)}=G(s)H(s)
+	\end{equation}
+
+La salida C(s) y la entrada R(s) se relacionan de la siguiente forma:
+
+\begin{equation}\label{eq:C}
+	\centering	C(s)=G(s)E(s)
+	\end{equation}
+	
+	\begin{equation}\label{eq:E}
+	\centering  E(s)=R(s)-B(s)
+	\end{equation}
+	
+	\begin{equation}\label{eq:E1}
+	\centering  E(s)=R(s)-H(s)C(s)
+	\end{equation}
+
+Si se sustituye E(s) con la ecuación (4) en la ecuación (2), se obtiene:
+	\begin{equation}\label{eq:C1}
+	\centering  C(s)=G(s)[R(s)-H(s)C(s)]
+	\end{equation}
+o bien:
+	\begin{equation}\label{eq:Og_FT_cl}
+	\centering  \frac{C(s)}{R(s)} = \frac{G(s)}{1+G(s)H(s)}
+	\end{equation}
+
+La ecuación~\ref{eq:Og_FT_cl} es la función de transferencia que relaciona C(s) con R(s), esta se denomina función de transferencia en lazo cerrado.\\
+
+Al diseñar un sistema de control, se debe ser capaz de predecir su comportamiento dinámico a partir del conocimiento de los componentes. Las característica más importantes del comportamiento dinámico de un sistema de control son la estabilidad absoluta y el error en estado estacionario. Los errores en un sistema de control se pueden atribuir a muchos factores. Los cambios en la entrada de referencia provocan errores inevitables durante los periodos transitorios y también pueden producir errores en estado estacionario.\\
+
+Se utilizará dos compensadores, cumplen con la función de mejorar la estabilidad del sistema, dichos compensadores son:
+\begin{itemize}
+    \item Regulador de atraso: el efecto principal es aumentar la atenuación de la señal, mientras aumenta el atraso de fase. Asimismo, un compensador de atraso puede hacer que disminuya el ancho de banda del sistema y/o los márgenes de ganancia, y en general puede ocasionar que un sistema sea más lento.
+
+    \item Regulador de adelanto: Este compensador desciende la ganancia de baja frecuencia y eleva el ángulo de fase de la frecuencia media total. Normalmente se utiliza para mejorar el margen de fase. Es decir, puede mejorar la estabilidad relativa del sistema.
+    
+\end{itemize}
+
+
+
+
+\section{DESCRIPCIÓN DEL PROBLEMA}
+
+Se trabajó con un sistema de control de un torno paralelo convenciona, al cual se le debe encontrar la función de transferencia tanto en lazo cerrado como abierto y su error de estado estacionario respectivo. 
+Se puede apreciar a mayor detalle su funcionamieto en el diagrama de bloques que se muestra en la figura~\ref{fig:diagramabloques}.\\
+
+
+\begin{figure}[hbtp]
+	\centering
+	\includegraphics[width = \columnwidth]{torno (1).pdf} 
+	\caption[Figura3]{Torno paralelo y sus partes mecánicas móviles. \cite{torno}}
+	%\label{fig:torno}
+\end{figure}
+
+\begin{figure}[hbtp]
+	\centering
+	\includegraphics[width = \columnwidth]{diagramabloques.pdf} 
+	\caption[Figura3]{Diagrama de bloques del sistema en lazo cerrado. [Fuente: enunciado del proyecto]} 
+	\label{fig:diagramabloques} 
+\end{figure}
+
+\\
+Donde: 
+
+\begin{itemize}
+\item $G_c(s)$ es la función del regulador.
+\begin{equation}
+    %\label{eq:Gc}
+	\centering	G_c= K_c
+	\end{equation}
+
+\item $G_1(s)$ corresponde a la función de transferencia del motor DC. 
+\begin{equation}
+    %\label{eq:G1}
+	\centering	G_1= \frac{1}{s^2+5s+6}
+	\end{equation}
+	
+\item $G_2(s)$ es la función de transferencia del juego de engranajes que interconectan el actuador con el husillo (eje roscar). La rueda conductora acoplada al eje del motor tiene 20 dientes y la conducida 40, ésta última engranada con la cremallera del torno permite el movimiento longitudinal, pudiéndose asemejar al sistema al mostrado en la figura~\ref{fig:diagcuarlibreengranes}: \\
+\begin{equation}
+    %\label{eq:G2}
+	\centering	G_2= \frac{N_1}{N_2}= \frac{20}{40}= \frac{1}{2}
+	\end{equation}
+	
+\item $G_3(s)$ será un bloque integrador.
+\begin{equation}
+    %\label{eq:Gc}
+	\centering	G_3= \frac{1}{s}
+	\end{equation}
+	
+\item $G_4(s)$ es el modelo del carro longitudinal que se mueve sobre el husillo.
+\begin{equation}
+    %\label{eq:Gc}
+	\centering	G_4= \frac{1}{s^2+8s+25}
+	\end{equation}
+	
+\item H(s) es la función de realimenatación del sensor de posición del carro.
+\begin{equation}
+    %\label{eq:Gc}
+	\centering	G_1= \frac{1}{s+3}
+	\end{equation}
+	
+\end{itemize}
+
+	\begin{figure}[hbtp]
+	\centering
+	\includegraphics[width = \columnwidth]{diagcuerlibreengranes.pdf} 
+	\caption[Figura3]{Diagrama de cuerpo libre de los engranajes. [Fuente: enunciado del proyecto]}
+	\label{fig:diagcuarlibreengranes} 
+\end{figure}
+
+Asimismo, mediante la técnica del lugar de las raíces, se requiere diseñar el regulador $G_c(s)$ de forma adecuada para que el sistema de lazo cerrado tenga un comportamiento similar a un sistema de segundo orden subamortiguado con un sobreimpulso menor al 5\% ante una entrada escalón unitario en R(s).\\
+
+Además, se solicita adicionar al regulador $G_c(s)$ un compensador de atraso y luego un compensador de adelanto para que el tiempo de estabilización $t_s<$0,1s. Para así hacer un análisis comparativo de cuál regulador es más factible utilizar.
+
+\section{SOLUCIÓN Y ANÁLISIS}
+
+Se procede a utilizar el software de ingeniería: Maxima (versión 19.05.7), el cual ofrece diversas funciones que permiten construir un programa capaz de ejecutar un análisis complejo de sistemas de control.
+
+Primeramente, se cargan los paquetes de instrucciones y luego las funciones que conocemos para llamarlas cuando las necesitemos. Para declarar un variable en Maxima, basta con escribir el nombre de la variable, seguido de dos puntos y finalmente el valor.
+
+\begin{figure}[hbtp]
+	\centering
+	\includegraphics[width =  210]{paquetes.pdf}
+	\caption[Figura3]{Paquetes de instrucciones usados en el proyecto} 
+	%\label{fig:Datos iniciales}
+\end{figure}
+
+\begin{figure}[hbtp]
+	\centering
+	\includegraphics[width =  \columnwidth]{Datos_iniciales.pdf}
+	\caption[Figura3]{Datos iniciales} 
+	%\label{fig:Datos iniciales}
+\end{figure}
+
+\subsection{Punto 1}
+Se comprueba que la función de transferencia sea estable con la función stablep() de la biblioteca $"$COMA$"$.\\
+
+La función de transferencia del sistema en lazo abierto de la ecuación(~\ref{eq:FT_OL}), donde $G_c$ corresponde a la ganancia, G(s) el producto de las funciones de transferecia de cada componente y H(s) corresponde a la retroalimentación. 
+En Maxima este tipo de ecuaciones pueden ser fácilmente calculadas con la función ratsimp(), la cual además permite simplificar una expresión matemática.
+\begin{equation}
+    FT_{OL} = Gc\cdot G(s)\cdot H(s)
+    \label{eq:FT_OL}
+\end{equation}
+
+
+Una vez aplicado esta función en Maxima se pudo obtener la función de fransferencia en lazo abierto (Respuesta 1), tal y como se muestra a continuación.
+\begin{figure}[hbtp]
+	\centering
+	\includegraphics[width =  \columnwidth]{P_1.pdf}
+	\caption[Figura3]{Solución del punto 1 en máxima} 
+	\label{fig:P1}
+\end{figure}
+
+\subsection{Punto 2 y 3}
+El error de estado estacionario de lazo abierto se calcula con ayuda de la siguiente ecuación:
+\begin{equation}
+    %\label{eq:Gc}
+	\centering	e_s_s=\lim_{n \to 0 }\left s*E(s)\right
+	\end{equation}
+Donde E(s) se sustitute con ayuda de la ecuación (4) y sustituyendo la relación de esta ecuación con las funciones resultantes de la figura 6 y considerando a la entrada R(s) como un escalón se realiza este calculo del error el cual se aprecia a continuación.
+
+\begin{figure}[hbtp]
+	\centering
+	\includegraphics[width = 0.95 \columnwidth]{error1.jpg}
+	\caption[Figura4]{Error de estado estacionario en lazo abierto del sistema} 
+	\label{fig:error1}
+\end{figure}
+En lazo cerrado, tomando en consideración que se sigue utilizando la ecuación (14) a la cual se sustituyen las relaciones de funciones como la de E(s) con la ecuación (4) y la de C(s) con la ecuación (5), para luego sustituir con las funciones de la figura 6; considerando a la entrada R(s) como un escalón se realiza este calculo del error el cual se aprecia a continuación:
+
+\begin{figure}[hbtp]
+	\centering
+	\includegraphics[width = 0.72  \columnwidth]{error2.jpg}
+	\caption[Figura5]{Error de estado estacionario en lazo cerrado del sistema.} 
+	\label{fig:P1}
+\end{figure}
+\\
+
+
+\subsection{Punto 4}
+En este punto se solicitaba dibujar el lugar de las raíces para el sistema en lazo cerrado. Con ayuda de Maxima, el cual dispone de un paquete de instrucciones llamado "COMA.mac", dicho paquete está diseñado para asistir en el diseño de sistemas de control y tiene una función en especial para dibujar el lugar de las raíces. En la primera gráfica resultante nos dio como resultado una gráfica que no coincide con la esperado, ya que mostraba polos y ceros de más. 
+Por tal motico se optó por hacer el lugar de las raíces desde cero con la ayuda de la biblioteca 'qdraw', esta facilita el dibujo de líneas y puntos, con opción de cambiar forma, tamaño y colores.
+\\
+\\
+La creación del lugar de las raíces empieza desde la declaración de una función llamada LUGAR\_DE\_LAS\_RAICES (Gc,G,H,R), es un bloque que contiene todos los procedimientos necesarios para dibujar el RL (Root Locus), se hace de esta manera por si se deben dibujar varias gráficas a lo largo del proyecto. 
+\\
+\\
+Con el fin de mostrar un procedimiento simplificado, en la figura \ref{fig:Lugar_raices} se observa un resumen de lo que hace la función que genera el lugar de las raíces.
+
+\begin{figure}[hbtp]
+	\centering
+	\includegraphics[width =  \columnwidth]{RL.pdf}
+	\caption[Figura6]{Resumen de función generadora de lugar de las raíces.} 
+    \label{fig:Lugar_raices} 
+\end{figure}
+\\
+Por lo tanto, se puede llamar dicha función y obtener el lugar de las raíces de una función de tranferencia específica. La solución del punto 4 está relacionado a esta función, en la figura~\ref{fig:P4-1} se muestra el llamado a la función con los parámetros necesarios y en la figura~\ref{fig:P4_2} se observa el lugar de las raíces desplegado.
+
+\begin{figure}[hbtp]
+	\centering
+	\includegraphics[width =   \columnwidth]{Preg4-1.pdf}
+	\caption[Figura7]{Llamada de la función LUGAR\_DE\_LAS\_RAICES(Gc,G,H,R) para obtener Respuesta 4.} 
+	\label{fig:P4-1}
+\end{figure}
+\\
+En la figura 11 se observa el rango de Kc donde la función de transferencia es estable, dicho rango va de $0 \le Kc \le 1315.3$, dichos valores se verificaron mediante el criterio de estabilidad de Routh-Herwitz.
+\\
+\begin{figure}[hbtp]
+	\centering\\
+	\includegraphics[width = 0.98  \columnwidth]{Preg4-2.pdf}
+	\caption[Figura8]{Lugar de las raíces del sistema. Respuesta 4.} 
+	\label{fig:P4_2}
+\end{figure}
+\subsection{Punto 5}
+Para el diseño de un regulador Gs(s) para un comportamiento similar a un sistema de segundo orden subamortiguado, el sistema será de lazo cerrado  tendrá un sobreimpulso de Mp\%. La obtención de $\delta$ se hace con la siguiente ecuación $Mp = e^{\frac{-\delta\cdot\pi}{\sqrt{1-\delta^2}}} $, la cual no puede ser resuelta por Maxima con la función 'solve()', por lo que se optó por generar un ciclo for donde un número tome el campo de $\delta$, luego se buscaría en número que cumpliera la siguiente condición: $\frac{-\delta\cdot\pi}{\sqrt{1-\delta^2}} - ln(Mp) \le 0.0005 $, de esta manera se logró obtener el $\delta$. 
+ 
+\newline
+\newline
+\newline
+\newline
+
+
+\newline
+\newline
+\newline
+\newline
+
+\begin{figure}[hbtp]
+	\centering
+	\includegraphics[width = 0.83 \columnwidth]{Preg5-1.pdf}
+	\caption[Figura9]{Bloque usado para obtener valor de Kc para un sobreimpulso de 5\%.} 
+	\label{fig:P5_1}
+\end{figure}
+
+En la figura 13 se puede observar el código implementado para el cálculo del Kc, para este calculo se usa lo siguiente:
+\begin{equation}
+    K =	\frac{\prod_{j=1}^{ n}\|s + p_{j}\|}{\prod_{i=1}^{m}\|s + z_{i}\|}
+    \label{eq:k}
+\end{equation}
+Dado que se tiene como condición que el sobreimpulso sea de 5\% , para eso en Maxima se escribe las siguientes líneas de la figura \ref{fig:P5_2}, se observa que muestra un valor de $\delta$, el cual cumple con la condición para un sistema subamortiguado, donde $0.4 < \delta < 0.8$.
+\begin{figure}[hbtp]
+	\centering
+	\includegraphics[width = 200]{Preg5-2.pdf}
+	\caption[Figura10]{Obtención de un regulador G(s) que genere un sobreimpulso de 5\%.} 
+	\label{fig:P5_2} 
+\end{figure}
+
+\subsection{Punto 6}
+El punto 6 se solicita mostrar la respuesta al escalón obtenida con el valor de Kc, la figura \ref{fig:P6_1} muestra las instrucciones utilizadas y la figura \ref{fig:P6_2} muestra la respuesta al escalón. Se utiliza la bilbioteca $"$COMA$"$ para generar la gráfica.
+\begin{figure}[hbtp]
+	\centering
+	\includegraphics[width = 1.1 \columnwidth]{Preg6-1.pdf}
+	\caption[Figura11]{Bloque usado para obtener respuesta al escalón.} 
+	\label{fig:P6_1} 
+\end{figure}
+\begin{figure}[hbtp]
+	\centering
+	\includegraphics[width =  \columnwidth]{Preg6-2.pdf}
+	\caption[Figura12]{Respuesta al escalón para un valor de Kc = 327.05.} 
+	\label{fig:P6_2} 
+\end{figure}
+
+\subsection{Punto 7}
+El diseño de un compensador de atraso se puede observar en las siguientes ecuaciones: 
+\begin{equation}
+    F(s) = \frac{s+z_{a}}{s+p_{a}}\cdot K_{c}\cdot G1(s)\cdot G2(s)\cdot G3(s)\cdot G4(s)
+\end{equation}
+\begin{equation}
+    M(s)=\frac{Y(s)}{R(s)}=\frac{F(s)}{1+H(s)\cdot F(s)}
+\end{equation}
+
+El bloque escrito en Maxima que se muestra acontinuación (figura \ref{fig:P7_1}), tiene dos parámetros de entrada, dichos parámetros son las posiciones de los polos y ceros que vamos a agregar.
+
+\begin{figure}[hbtp]
+	\centering
+	\includegraphics[width = 0.9 \columnwidth]{Preg7-1.pdf}
+	\caption[Figura13]{Diseño de compensador de atraso.} 
+	\label{fig:P7_1} 
+\end{figure}
+
+Si se ingresa en la función un valor para Za de $z_{a} = 0.00015$ y para pa de $p_{a} = 0.00001$, se obtendrá como respuesta lo siguiente:
+
+\begin{figure}[hbtp]
+	\centering
+	\includegraphics[width =  \columnwidth]{Preg7-2.pdf}
+	\caption[Figura3]{Diseño de compensador de atraso. Respuesta 7.} 
+	\label{fig:P7_2}
+\end{figure}
+
+\subsection{Punto 8}
+Similar al punto 4, ingresamos el compensador de atraso en la función: LUGAR\_DE\_LAS\_RAICES(Gc,G,H,R) como se muestra en la figura \ref{fig:P8_1}.
+\begin{figure}[hbtp]
+	\centering
+	\includegraphics[width =  \columnwidth]{Preg8-1.pdf}
+	\caption[Figura3]{Ingreso de datos en función LUGAR\_DE\_LAS\_RAICES(Gc,G,H,R) para obtener respuesta 8.} 
+	\label{fig:P8_1}
+\end{figure}
+
+El resultado del lugar de las raíces del sistema con compensador de atraso se muesta a continuación:
+\\
+\begin{figure}[hbtp]
+	\centering
+	\includegraphics[width =  \columnwidth]{Preg8-2.pdf}
+	\caption[Figura3]{Lugar de las raíces para sistema con compensador de atraso} 
+	\label{fig:P8_2} 
+\end{figure}
+Al comparar los lugares de la raíz se aprecia un pequeño cambio en el centroide y en el rango de Kc. El centroide pasó de estar ubicado en $-2.6$ a $-2$ y el rango mayor de Kc pasó de estar en $1315,3$ a $1315,4$.
+
+\section{CONCLUSIONES}
+
+\begin{enumerate}
+
+    \item Se puede destacar que la mejor opción para este sistema es usar un regulador de atraso dado a su error, ya que el error  sistema en lazo abierto es de -2, mientras que en lazo cerrado es de 0.25 y el compensador de atraso de $\frac{s+1.5\cdot10^{-4}}{s+1.0\cdot10^{-5}}$, generó un error de estado estacionario aproximadamente de $5.9\cdot10^{-5}$.
+    \item Se puede resaltar a través de la ganancia que el regulador de atraso presentó una ganancia menor a comparación al resto en el análisis por el método de las raíces, donde el rango de ganancia del Kv inicialmente iba desde 0 hasta 1315,3.Mientras que al diseñar el regulador en atraso para un sobreimpulso de 5\%, fue de
+    327,05.
+    \item El cálculo del regulador en adelanto aunque no se pudo sacar exitosamenteme, se puede predecir que su error va ser aún menor que el de atraso o muy cercano a este lo que provocaria que su ganancia vaya a descender de igual manera.
+
+\end{enumerate}
+\section{RECOMENDACIONES}
+\begin{itemize}
+     \item Al concluir el proyecto se recomienda el uso de otro software más especializado y con más recursos; aunque que el programa Maxima es gratuito y de fácil acceso y descarga, su interfaz no es la más amigable con el usuario, además de presentar errores en el programa, como por ejemplo en la función del lugar de las raíces en el paquete de instrucciones $"$COMA$"$.
+    \item El cálculo de los reguladores pudo haber sido resuelto por diagramas de Bode, ya que por lugar de raíces fue algo impreciso su cálculo.
+    
+\end{itemize}
+
+\begin{thebibliography}{1}
+\bibitem{Dorf}
+Dorf, R and Bishop, R. \emph{Sistemas de Control Modernos}. Madrid: Pearson Educación. S.A., 10th ed., 2005.
+
+\bibitem{torno} 
+Extraído. (2019). \emph{Torno Universal}. https://ingjjnina.jimdo.com/app/down load/5874170018/TORNO-UNIVERSAL.pdf. online
+
+\bibitem{Kuo} 
+Kuo, B. \emph{Sistemas de Control Automático}. México: Prentice Hall, 7th ed., 1996.
+
+\bibitem{Ogata} 
+Ogata, K. (2010). \emph{Ingeniería de Control Moderna}. Madrid: Pearson Educación. S.A., 5th ed., 2010.
+
+\end{thebibliography}
+
+\end{document}
